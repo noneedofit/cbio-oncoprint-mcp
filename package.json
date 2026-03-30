@@ -1,0 +1,34 @@
+{
+  "name": "cbio-oncoprint-mcp-app",
+  "version": "0.1.0",
+  "description": "cBioPortal OncoPrint MCP App — GSoC PoC",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && tsc -p tsconfig.server.json && npm run build:ui",
+    "build:ui": "cross-env INPUT=mcp-app.html vite build && cross-env INPUT=summary-app.html vite build",
+    "start": "concurrently \"vite build --watch\" \"tsx watch main.ts\"",
+    "start:server": "tsx main.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.1.2",
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.14.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.3.1",
+    "vite-plugin-singlefile": "^2.1.0"
+  }
+}
