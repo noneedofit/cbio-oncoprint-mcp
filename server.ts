@@ -104,12 +104,20 @@ async function fetchStudySummaryData(studyId: string): Promise<object> {
     cbioFetch<CbioProfile[]>(`${CBIO_API}/studies/${studyId}/molecular-profiles`),
   ]);
 
+  // allSampleCount can be 0 or 1 for some legacy studies; derive from individual counts
+  const totalSamples = Math.max(
+    study.allSampleCount,
+    study.sequencedSampleCount ?? 0,
+    study.cnaSampleCount ?? 0,
+    study.mrnaRnaSeqV2SampleCount ?? 0,
+  );
+
   return {
     studyId: study.studyId,
     name: study.name,
     description: study.description,
     cancerTypeId: study.cancerTypeId,
-    totalSamples: study.allSampleCount,
+    totalSamples,
     sequencedSamples: study.sequencedSampleCount,
     cnaSamples: study.cnaSampleCount,
     mrnaSamples: study.mrnaRnaSeqV2SampleCount,
