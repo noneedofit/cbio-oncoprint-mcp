@@ -47,11 +47,14 @@ async function fetchOncoPrintData(genes: string[], studyId: string): Promise<obj
   const mutProfileId = `${studyId}_mutations`;
   const sampleListId = `${studyId}_sequenced`;
 
-  // Resolve Hugo symbols → Entrez IDs, validating genes against cBioPortal's gene DB
-  const geneData = await cbioFetch<CbioGene[]>(
-    `${CBIO_API}/genes/fetch?geneIdType=HUGO_GENE_SYMBOL`,
-    { method: "POST", body: JSON.stringify(genes) }
-  );
+  // Resolve Hugo symbols and fetch study metadata in parallel
+  const [geneData, study] = await Promise.all([
+    cbioFetch<CbioGene[]>(
+      `${CBIO_API}/genes/fetch?geneIdType=HUGO_GENE_SYMBOL`,
+      { method: "POST", body: JSON.stringify(genes) }
+    ),
+    cbioFetch<CbioStudy>(`${CBIO_API}/studies/${studyId}`),
+  ]);
   if (geneData.length === 0) throw new Error("No matching genes found in cBioPortal.");
 
   const entrezIds = geneData.map((g) => g.entrezGeneId);
@@ -87,7 +90,7 @@ async function fetchOncoPrintData(genes: string[], studyId: string): Promise<obj
     samples: alteredSamples,
     alterations,
     frequencies: freqMap,
-    studyName: `Breast Cancer (${studyId}) — Live Data from cBioPortal`,
+    studyName: `${study.name} — Live Data`,
     studyUrl: `https://www.cbioportal.org/study/summary?id=${studyId}`,
     isLiveData: true,
   };
